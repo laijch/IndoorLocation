@@ -35,11 +35,11 @@
         <servlet>下的<servlet-name>内的值和<servlet-mapping>下的<servlet-name>内的值要完全一致
     -->
     <servlet>
-	    <servlet-name>SendMsg</servlet-name>
-	    <servlet-class>com.indoorloc.controller.SendMsg</servlet-class>
+	    <servlet-name>RequestImage</servlet-name>
+	    <servlet-class>com.indoorloc.controller.RequestImage</servlet-class>
 	</servlet>
     <servlet-mapping>
-	    <servlet-name>SendMsg</servlet-name>
+	    <servlet-name>RequestImage</servlet-name>
 	    <url-pattern>/requestimage</url-pattern>
 	</servlet-mapping>
 	
