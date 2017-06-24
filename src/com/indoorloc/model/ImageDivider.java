@@ -6,12 +6,12 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class ImageDivitor {
+public class ImageDivider {
 	public BufferedImage image;
-	Point minPos;
-	Point maxPos;
+	private Point minPos;
+	private Point maxPos;
 	
-	public ImageDivitor(String filename, Point _minPos, Point _maxPos) throws IOException {
+	public ImageDivider(String filename, Point _minPos, Point _maxPos) throws IOException {
         File file = new File(filename);
         image = ImageIO.read(file);
         
