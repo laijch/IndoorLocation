@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.indoorloc.model.Point;
+import com.indoorloc.model.TrianglePosition;
+
 public class RequestUserPosition extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -18,46 +21,23 @@ public class RequestUserPosition extends HttpServlet {
 		 * 
 		 * 例如：222.200.185.76:9302/IndoorLocServer/RequestUserPosition?ax=0&ay=1&bx=0&by=0&cx=1&cy=0&apb=0.785398&bpc=0.785398
 		 */
-		double ax = Double.parseDouble(request.getParameter("ax"));
-		double ay = Double.parseDouble(request.getParameter("ay"));
-		double bx = Double.parseDouble(request.getParameter("bx"));
-		double by = Double.parseDouble(request.getParameter("by"));
-		double cx = Double.parseDouble(request.getParameter("cx"));
-		double cy = Double.parseDouble(request.getParameter("cy"));
+		int ax = Integer.parseInt(request.getParameter("ax"));
+		int ay = Integer.parseInt(request.getParameter("ay"));
+		int bx = Integer.parseInt(request.getParameter("bx"));
+		int by = Integer.parseInt(request.getParameter("by"));
+		int cx = Integer.parseInt(request.getParameter("cx"));
+		int cy = Integer.parseInt(request.getParameter("cy"));
 		double apb = Double.parseDouble(request.getParameter("apb"));
 		double bpc = Double.parseDouble(request.getParameter("bpc"));
 		
-		double bc = Math.sqrt(Math.pow(cx-bx,2)+Math.pow(cy-by,2));
-		double ab = Math.sqrt(Math.pow(ax-bx,2)+Math.pow(ay-by,2));
-		// 原theta值<弧度制>推导公式有误，以下是正确公式
-		double theta = Math.acos(((cx-bx)*(ax-bx)+(cy-by)*(ay-by))/(bc*ab));
-		// 中间值计算
-		double cot_bpc = Math.cos(bpc)/Math.sin(bpc);
-		double sin_apb_theta = Math.sin(apb+theta);
-		double cos_apb_theta = Math.cos(apb+theta);
-		double sin_apb = Math.sin(apb);
-		double num1 = bc*ab*(sin_apb_theta*cot_bpc+cos_apb_theta);
-		double denominator = Math.pow(ab*sin_apb_theta-bc*sin_apb, 2)
-				+Math.pow(ab*cos_apb_theta+bc*sin_apb*cot_bpc, 2);
+		Point a = new Point(ax, ay);
+		Point b = new Point(bx, by);
+		Point c = new Point(cx, cy);
+		TrianglePosition tp = new TrianglePosition(a, b, c, apb, bpc);
+		/**格式："x|y" */
+		String res = tp.getUserPositionStr();
 		
-		double x0 = num1*(bc*sin_apb*cot_bpc+ab*cos_apb_theta)/denominator;
-		double y0 = num1*(ab*sin_apb_theta-bc*sin_apb)/denominator;
-		
-		//用户坐标
-		double xp = x0*(cx-bx)/bc-y0*(cy-by)/bc+bx;
-		double yp = x0*(cy-by)/bc+y0*(cx-bx)/bc+by;
-		int x = (new Double(xp)).intValue();
-		int y = (new Double(yp)).intValue();
-		
-		System.out.println("theta：" + theta);
-		System.out.println("bc：" + bc);
-		System.out.println("ab：" + ab);
-		System.out.println("x0：" + x0);
-		System.out.println("y0：" + y0);
-		System.out.println("x：" + x);
-		System.out.println("y：" + y);
-		
-		String res = x + "|" + y;
+		System.out.println(res);
 		response.getWriter().append(res);
     }
 	

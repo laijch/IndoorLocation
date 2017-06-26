@@ -28,33 +28,35 @@ public class UploadImage extends HttpServlet {
 	//保存图片
 	private void saveImage(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
+		DiskFileItemFactory dff = new DiskFileItemFactory();
+		ServletFileUpload sfu = new ServletFileUpload(dff);
 		try {
-			DiskFileItemFactory dff = new DiskFileItemFactory();
-			ServletFileUpload sfu = new ServletFileUpload(dff);
 			List<FileItem> items = sfu.parseRequest(request);
 			
-			// 获取上传字段
-			FileItem fileItem = items.get(0);
-			
-			// 文件名
-			String filename = fileItem.getName();
-
-			// 生成存储路径
-			String storeDirectory = getServletContext().getRealPath("/image");
-			File file = new File(storeDirectory);
-			if (!file.exists()) {
-				file.mkdir();
-			}
-			String path = genericPath(filename, storeDirectory);
-			
-			// 处理文件的上传
-			try {
-				fileItem.write(new File(storeDirectory + path, filename));
+			for(int i = 0; i < items.size(); i++) {
+				// 获取上传字段
+				FileItem fileItem = items.get(i);
 				
-				String filePath = "/image" + path + "/" + filename;
-//				response.getWriter().append(filePath);
-			} catch (Exception e) {
-				response.getWriter().append("Image upload failure.");
+				// 文件名
+				String filename = fileItem.getName();
+
+				// 生成存储路径
+				String storeDirectory = getServletContext().getRealPath("/image");
+				File file = new File(storeDirectory);
+				if (!file.exists()) {
+					file.mkdir();
+				}
+				String path = genericPath(filename, storeDirectory);
+				
+				// 处理文件的上传
+				try {
+					fileItem.write(new File(storeDirectory + path, filename));
+					
+					String filePath = "/image" + path + "/" + filename;
+//					response.getWriter().append(filePath);
+				} catch (Exception e) {
+					response.getWriter().append("Image upload failure.");
+				}
 			}
 		} 
 		catch (Exception e) {

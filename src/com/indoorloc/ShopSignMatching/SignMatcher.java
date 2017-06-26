@@ -12,7 +12,7 @@ import com.indoorloc.model.Point;
  * @author Mo Haoran on 2017.06.24
  * @function 招牌匹配模块，用在后台服务器分割子图之后，利用模型得到店铺坐标
  *
- */
+ */ 
 public class SignMatcher {
 	public BufferedImage image;
 	
