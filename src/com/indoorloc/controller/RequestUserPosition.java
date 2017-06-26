@@ -44,8 +44,10 @@ public class RequestUserPosition extends HttpServlet {
 		double y0 = num1*(ab*sin_apb_theta-bc*sin_apb)/denominator;
 		
 		//ÓÃ»§×ø±ê
-		double x = x0*(cx-bx)/bc-y0*(cy-by)/bc+bx;
-		double y = x0*(cy-by)/bc+y0*(cx-bx)/bc+by;
+		double xp = x0*(cx-bx)/bc-y0*(cy-by)/bc+bx;
+		double yp = x0*(cy-by)/bc+y0*(cx-bx)/bc+by;
+		int x = (new Double(xp)).intValue();
+		int y = (new Double(yp)).intValue();
 		
 		System.out.println("theta£º" + theta);
 		System.out.println("bc£º" + bc);
@@ -55,7 +57,7 @@ public class RequestUserPosition extends HttpServlet {
 		System.out.println("x£º" + x);
 		System.out.println("y£º" + y);
 		
-		String res = "(" + x + ", " + y + ")";
+		String res = x + "|" + y;
 		response.getWriter().append(res);
     }
 	
