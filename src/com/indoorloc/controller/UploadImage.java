@@ -14,12 +14,30 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.indoorloc.ShopSignMatching.MatlabClient;
+import com.indoorloc.model.Point;
+
 public class UploadImage extends HttpServlet {
+	
+	MatlabClient matlabClient = new MatlabClient("172.19.128.222", 6677);
+	String[] imagePath = {"5", "2", "4"};
+	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 		saveImage(request, response);
-		
+		//把3张图片的路径传给Matlab服务器，获取类别
+		try {
+			matlabClient.shopSignClassification(imagePath);
+			Point[] shopPos = matlabClient.getShopPosition();
+			
+			for (int i = 0; i < shopPos.length; i++) {
+				System.out.println("ShopPos" + i + " : (" + shopPos[i].x + ", " + shopPos[i].y + ")");
+			}
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		double x = Math.random() * 10.0;
 		double y = Math.random() * 10.0;
 		String res = "(" + x + ", " + y + ")";
@@ -33,7 +51,6 @@ public class UploadImage extends HttpServlet {
 		ServletFileUpload sfu = new ServletFileUpload(dff);
 		try {
 			List<FileItem> items = sfu.parseRequest(request);
-			List<String> paths;
 			
 			for(int i = 0; i < items.size(); i++) {
 				// 获取上传字段
@@ -48,15 +65,16 @@ public class UploadImage extends HttpServlet {
 				if (!file.exists()) {
 					file.mkdir();
 				}
-				String pathi = genericPath(filename, storeDirectory);
-				//paths.add(pathi);
+				String path = genericPath(filename, storeDirectory);
 				
 				// 处理文件的上传
 				try {
-					fileItem.write(new File(storeDirectory + pathi, filename));
+					fileItem.write(new File(storeDirectory + path, filename));
 					
-					String filePath = "/image" + pathi + "/" + filename;
-					System.out.println(i+": success, path="+pathi);
+//					String filePath = "/image" + path + "/" + filename;
+					// 把图片路径赋值给imagePath
+					imagePath[i] = "http://172.18.70.44:8080/IndoorLocServer/image" + path + "/" + filename;
+					System.out.println(i+": success, path="+imagePath[i]);
 					response.getWriter().append("success");
 				} catch (Exception e) {
 					System.out.println("Image upload failure1.");
