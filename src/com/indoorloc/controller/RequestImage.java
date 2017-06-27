@@ -26,8 +26,8 @@ public class RequestImage extends HttpServlet {
 		ImageDivider imageDivider = new ImageDivider(basepath + "image/shop_sign.jpg", new Point(10, 10), new Point(500, 500));
 		myImageIO.myWrite(imageDivider.getShopSignImage(), basepath + "image/ShopSign/shop_sign_small.png");
 		
-		//返回web资源地址
-		response.getWriter().append("http://172.18.70.44:8080/IndoorLocServer/image/ShopSign/shop_sign_small.png");
+		//返回web资源地址172.18.70.44
+		response.getWriter().append("http://localhost:8080/IndoorLocServer/image/ShopSign/shop_sign_small.png");
     }
 	
 	@Override

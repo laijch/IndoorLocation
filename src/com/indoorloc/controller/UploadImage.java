@@ -2,6 +2,7 @@ package com.indoorloc.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyStore.LoadStoreParameter;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -32,6 +33,7 @@ public class UploadImage extends HttpServlet {
 		ServletFileUpload sfu = new ServletFileUpload(dff);
 		try {
 			List<FileItem> items = sfu.parseRequest(request);
+			List<String> paths;
 			
 			for(int i = 0; i < items.size(); i++) {
 				// 获取上传字段
@@ -46,21 +48,25 @@ public class UploadImage extends HttpServlet {
 				if (!file.exists()) {
 					file.mkdir();
 				}
-				String path = genericPath(filename, storeDirectory);
+				String pathi = genericPath(filename, storeDirectory);
+				//paths.add(pathi);
 				
 				// 处理文件的上传
 				try {
-					fileItem.write(new File(storeDirectory + path, filename));
+					fileItem.write(new File(storeDirectory + pathi, filename));
 					
-					String filePath = "/image" + path + "/" + filename;
-//					response.getWriter().append(filePath);
+					String filePath = "/image" + pathi + "/" + filename;
+					System.out.println(i+": success, path="+pathi);
+					response.getWriter().append("success");
 				} catch (Exception e) {
-					response.getWriter().append("Image upload failure.");
+					System.out.println("Image upload failure1.");
+					response.getWriter().append("Image upload failure1.");
 				}
 			}
 		} 
 		catch (Exception e) {
-			response.getWriter().append("Image upload failure.");
+			System.out.println("Image upload failure2.");
+			response.getWriter().append("Image upload failure2.");
 		}
 	}
 	//计算文件的存放目录
