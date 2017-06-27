@@ -1,8 +1,8 @@
 package com.indoorloc.model;
 
 public class Point {
-	int x;
-	int y;
+	public int x;
+	public int y;
 
 	public Point(int _x, int _y) {
         x = _x;
