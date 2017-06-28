@@ -3,6 +3,7 @@ package com.indoorloc.controller;
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore.LoadStoreParameter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -13,72 +14,100 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.indoorloc.ShopSignMatching.MatlabClient;
 import com.indoorloc.model.Point;
+import com.indoorloc.model.TrianglePosition;
 
 public class UploadImage extends HttpServlet {
 	
-	MatlabClient matlabClient = new MatlabClient("172.19.128.222", 6677);
-	String[] imagePath = {"5", "2", "4"};
+	private MatlabClient matlabClient = new MatlabClient("172.19.128.158", 6677);
+	private String[] imagePath = {"5", "2", "4"};
+	private Point[] shopPos;
+	private double angle1;  // 弧度角
+	private double angle2;  // 弧度角
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-		saveImage(request, response);
+		// 保存图片和参数
+		savefileItem(request, response);
 		//把3张图片的路径传给Matlab服务器，获取类别
 		try {
 			matlabClient.shopSignClassification(imagePath);
-			Point[] shopPos = matlabClient.getShopPosition();
+			shopPos = matlabClient.getShopPosition();
 			
 			for (int i = 0; i < shopPos.length; i++) {
 				System.out.println("ShopPos" + i + " : (" + shopPos[i].x + ", " + shopPos[i].y + ")");
 			}
 		} 
 		catch (Exception e) {
+			System.out.println("获取位置失败");
+			response.getWriter().append("get position fail");
 			e.printStackTrace();
 		}
-		double x = Math.random() * 10.0;
-		double y = Math.random() * 10.0;
-		String res = "(" + x + ", " + y + ")";
+		// 三角定位计算用户地址(20,20)~(1300,2900)
+		TrianglePosition tp = new TrianglePosition(shopPos[0], shopPos[1], shopPos[2], angle1, angle2);
+		/**格式："x|y" */
+		String res = tp.getUserPositionStr();
+		System.out.println(res);
 		response.getWriter().append(res);
     }
 	
-	//保存图片
-	private void saveImage(HttpServletRequest request, HttpServletResponse response) 
+	//保存图片和参数
+	private void savefileItem(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		DiskFileItemFactory dff = new DiskFileItemFactory();
 		ServletFileUpload sfu = new ServletFileUpload(dff);
 		try {
+			System.out.println("--------Start saving--------");
 			List<FileItem> items = sfu.parseRequest(request);
 			
 			for(int i = 0; i < items.size(); i++) {
 				// 获取上传字段
 				FileItem fileItem = items.get(i);
 				
-				// 文件名
-				String filename = fileItem.getName();
+				if (fileItem.isFormField()) {
+					// 普通文本处理（参数）
+					String paramName = fileItem.getFieldName();
+					String paramValue = fileItem.getString();
+					System.out.println(paramName + ":" + paramValue);
+					// 参数为角度时，转换为弧度值并保存
+					if (paramName == "angle1") {
+						double angle = Double.parseDouble(paramValue);
+						angle1 = Math.toRadians(angle);
+						System.out.println(paramName + "(radian value):" + angle1);
+					} else if (paramName == "angle2") {
+						double angle = Double.parseDouble(paramValue);
+						angle2 = Math.toRadians(angle);
+						System.out.println(paramName + "(radian value):" + angle1);
+					}
+				} else {
+					// 文件名
+					String filename = fileItem.getName();
 
-				// 生成存储路径
-				String storeDirectory = getServletContext().getRealPath("/image");
-				File file = new File(storeDirectory);
-				if (!file.exists()) {
-					file.mkdir();
-				}
-				String path = genericPath(filename, storeDirectory);
-				
-				// 处理文件的上传
-				try {
-					fileItem.write(new File(storeDirectory + path, filename));
+					// 生成存储路径
+					String storeDirectory = getServletContext().getRealPath("/image");
+					File file = new File(storeDirectory);
+					if (!file.exists()) {
+						file.mkdir();
+					}
+					String path = genericPath(filename, storeDirectory);
 					
-//					String filePath = "/image" + path + "/" + filename;
-					// 把图片路径赋值给imagePath
-					imagePath[i] = "http://172.18.70.44:8080/IndoorLocServer/image" + path + "/" + filename;
-					System.out.println(i+": success, path="+imagePath[i]);
-					response.getWriter().append("success");
-				} catch (Exception e) {
-					System.out.println("Image upload failure1.");
-					response.getWriter().append("Image upload failure1.");
+					// 处理文件的上传
+					try {
+						fileItem.write(new File(storeDirectory + path, filename));
+						imagePath[i] = "http://172.19.128.158:8080/IndoorLocServer/image" + path + "/" + filename;
+						System.out.println(i+": success, path="+imagePath[i]);
+						System.out.println(filename);
+					} catch (Exception e) {
+						System.out.println("Image upload failure1.");
+						response.getWriter().append("Image upload failure1.");
+					}
 				}
 			}
 		} 
@@ -87,6 +116,7 @@ public class UploadImage extends HttpServlet {
 			response.getWriter().append("Image upload failure2.");
 		}
 	}
+	
 	//计算文件的存放目录
 	private String genericPath(String filename, String storeDirectory) {
 		int hashCode = filename.hashCode();

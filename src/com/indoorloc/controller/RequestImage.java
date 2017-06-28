@@ -13,7 +13,7 @@ import com.indoorloc.model.MyImageIO;
 import com.indoorloc.model.Point;
 
 public class RequestImage extends HttpServlet {
-//	MatlabClient matlabClient = new MatlabClient("172.19.128.222", 6677);
+//	MatlabClient matlabClient = new MatlabClient("172.19.128.158", 6677);
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
