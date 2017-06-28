@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.security.KeyStore.LoadStoreParameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,11 +51,17 @@ public class UploadImage extends HttpServlet {
 			response.getWriter().append("get position fail");
 			e.printStackTrace();
 		}
-		// 三角定位计算用户地址(20,20)~(1300,2900)
+		// 三角定位计算用户地址
 		TrianglePosition tp = new TrianglePosition(shopPos[0], shopPos[1], shopPos[2], angle1, angle2);
 		/**格式："x|y" */
 		String res = tp.getUserPositionStr();
-		System.out.println(res);
+		System.out.println("User Position: " + res);
+		/**测试：返回一定范围的随机位置(20,20)~(1300,2900)*/
+		Random random = new Random();
+		int x = random.nextInt(1300)%1281+20;
+		int y = random.nextInt(2900)%2881+20;
+		res = x+"|"+y;
+		System.out.println("User Position FOR TEST: " + res);
 		response.getWriter().append(res);
     }
 	
@@ -77,14 +84,14 @@ public class UploadImage extends HttpServlet {
 					String paramValue = fileItem.getString();
 					System.out.println(paramName + ":" + paramValue);
 					// 参数为角度时，转换为弧度值并保存
-					if (paramName == "angle1") {
+					if (paramName.equals("angle1")) {
 						double angle = Double.parseDouble(paramValue);
 						angle1 = Math.toRadians(angle);
 						System.out.println(paramName + "(radian value):" + angle1);
-					} else if (paramName == "angle2") {
+					} else if (paramName.equals("angle2")) {
 						double angle = Double.parseDouble(paramValue);
 						angle2 = Math.toRadians(angle);
-						System.out.println(paramName + "(radian value):" + angle1);
+						System.out.println(paramName + "(radian value):" + angle2);
 					}
 				} else {
 					// 文件名
