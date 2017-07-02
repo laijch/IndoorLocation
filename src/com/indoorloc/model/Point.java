@@ -8,4 +8,8 @@ public class Point {
         x = _x;
         y = _y;
     }
+	
+	public boolean equal(Point p) {
+		return (x == p.x && y == p.y);
+	}
 }
