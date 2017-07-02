@@ -51,17 +51,27 @@ public class UploadImage extends HttpServlet {
 			response.getWriter().append("get position fail");
 			e.printStackTrace();
 		}
-		// 三角定位计算用户地址
-		TrianglePosition tp = new TrianglePosition(shopPos[0], shopPos[1], shopPos[2], angle1, angle2);
-		/**格式："x|y" */
-		String res = tp.getUserPositionStr();
-		System.out.println("User Position: " + res);
-		/**测试：返回一定范围的随机位置(20,20)~(1300,2900)*/
-		Random random = new Random();
-		int x = random.nextInt(1300)%1281+20;
-		int y = random.nextInt(2900)%2881+20;
-		res = x+"|"+y;
-		System.out.println("User Position FOR TEST: " + res);
+		
+		String res = "";
+		// 判断图片能否匹配成功
+		Point wrong = new Point(-1, -1);
+		if (shopPos[0].equal(wrong) && shopPos[1].equal(wrong) && shopPos[2].equal(wrong)) {
+			res = "match failure.";
+			System.out.println(res);
+		} else {
+			// 三角定位计算用户地址
+			TrianglePosition tp = new TrianglePosition(shopPos[0], shopPos[1], shopPos[2], angle1, angle2);
+			/**格式："x|y" */
+			res = tp.getUserPositionStr();
+			System.out.println("User Position: " + res);
+			/**测试：返回一定范围的随机位置(20,20)~(1300,2900)*/
+			Random random = new Random();
+			int x = random.nextInt(1300)%1281+20;
+			int y = random.nextInt(2900)%2881+20;
+			res = x+"|"+y;
+			System.out.println("User Position FOR TEST: " + res);
+		}
+		
 		response.getWriter().append(res);
     }
 	
