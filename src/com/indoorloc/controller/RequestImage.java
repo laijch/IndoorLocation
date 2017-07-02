@@ -13,14 +13,14 @@ import com.indoorloc.model.MyImageIO;
 import com.indoorloc.model.Point;
 
 public class RequestImage extends HttpServlet {
-//	MatlabClient matlabClient = new MatlabClient("172.19.128.158", 6677);
+	MatlabClient matlabClient = new MatlabClient("172.18.70.44", 6677);
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 		
 		//把3张图片的路径传给Matlab服务器，获取类别
-		/*String[] imagePath = {"5", "2", "4"};
+		String[] imagePath = {"5", "2", "4"};
 		try {
 			matlabClient.shopSignClassification(imagePath);
 			Point[] shopPos = matlabClient.getShopPosition();
@@ -31,7 +31,7 @@ public class RequestImage extends HttpServlet {
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 
 		//回传图片
 		MyImageIO myImageIO = new MyImageIO();

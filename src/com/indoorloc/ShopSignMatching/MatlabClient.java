@@ -53,13 +53,20 @@ public class MatlabClient {
 	 * @param serverMsg
 	 */
 	public static void setClassTag(String classTag) throws Exception {
-		for (int i = 0; i < classlist.length; i++) {
-			if (classlist[i] == "") {
-				classlist[i] = classTag;
-				if (i + 1 < imagePaths.length)
-					interactWithMatlabServer(imagePaths[i + 1]);
-				
-				break;
+		if (!classTag.equals("-1")) {    //返回真正的类别
+			for (int i = 0; i < classlist.length; i++) {
+				if (classlist[i] == "") {
+					classlist[i] = classTag;
+					if (i + 1 < imagePaths.length)
+						interactWithMatlabServer(imagePaths[i + 1]);
+					
+					break;
+				}
+			}
+		}
+		else {    //上传图片无法找到匹配类别，设置类别为-1，给客户端提示
+			for (int i = 0; i < classlist.length; i++) {
+				classlist[i] = "-1";
 			}
 		}
 		
@@ -70,13 +77,18 @@ public class MatlabClient {
 	 * 通过类别以及映射表返回3个商铺的地理位置
 	 */
 	public Point[] getShopPosition() throws InterruptedException {
+		//等到3个店铺类别均获取才可返回
 		while (classlist[2] == "") {
 			Thread.sleep(300);
 		}
 		
 		Point[] shopPosSet = new Point[3];
 		for (int i = 0; i < 3; i++) {
-			shopPosSet[i] = classToPosMap.getClassToPosMap().get(classlist[i]);
+			if (!classlist[i].equals("-1"))
+				shopPosSet[i] = classToPosMap.getClassToPosMap().get(classlist[i]);
+			else
+				shopPosSet[i] = new Point(-1, -1);    //无法匹配时，返回点坐标(-1, -1)
+			
 			classlist[i] = "";
 		}
 		return shopPosSet;
