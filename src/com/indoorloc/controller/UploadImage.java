@@ -26,7 +26,7 @@ import com.indoorloc.model.TrianglePosition;
 
 public class UploadImage extends HttpServlet {
 	
-	private MatlabClient matlabClient = new MatlabClient("172.19.128.158", 6677);
+	private MatlabClient matlabClient = new MatlabClient("localhost", 6677);
 	private String[] imagePath = {"5", "2", "4"};
 	private Point[] shopPos;
 	private double angle1;  // 弧度角
@@ -118,7 +118,7 @@ public class UploadImage extends HttpServlet {
 					// 处理文件的上传
 					try {
 						fileItem.write(new File(storeDirectory + path, filename));
-						imagePath[i] = "http://172.19.128.158:8080/IndoorLocServer/image" + path + "/" + filename;
+						imagePath[i] = "http://localhost:8080/IndoorLocServer/image" + path + "/" + filename;
 						System.out.println(i+": success, path="+imagePath[i]);
 						System.out.println(filename);
 					} catch (Exception e) {

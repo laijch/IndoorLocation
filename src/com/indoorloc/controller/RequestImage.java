@@ -13,7 +13,7 @@ import com.indoorloc.model.MyImageIO;
 import com.indoorloc.model.Point;
 
 public class RequestImage extends HttpServlet {
-	MatlabClient matlabClient = new MatlabClient("172.18.70.44", 6677);
+	MatlabClient matlabClient = new MatlabClient("localhost", 6677);
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,7 +44,7 @@ public class RequestImage extends HttpServlet {
 		myImageIO.myWrite(imageDivider.getShopSignImage(), basepath + "image/ShopSign/shop_sign_small.png");
 		
 		//返回web资源地址172.18.70.44
-		response.getWriter().append("http://172.18.70.44:8080/IndoorLocServer/image/ShopSign/shop_sign_small.png");
+		response.getWriter().append("http://222.200.185.76:9302/IndoorLocServer/image/ShopSign/shop_sign_small.png");
     }
 	
 	@Override
