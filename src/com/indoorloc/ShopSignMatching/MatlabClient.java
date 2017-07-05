@@ -36,6 +36,8 @@ public class MatlabClient {
 	 * @param imagePath  单张图像路径
 	 */
 	private static void interactWithMatlabServer(String imagePath) throws Exception {
+		System.out.println("hostIP | port: " + hostIP + " | " + port);
+		
 		Socket clientSocket = new Socket(hostIP, port);
 		
 		//连接后，给服务器发送数据

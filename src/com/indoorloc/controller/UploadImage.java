@@ -37,6 +37,7 @@ public class UploadImage extends HttpServlet {
             throws ServletException, IOException {
 		// 保存图片和参数
 		savefileItem(request, response);
+		
 		//把3张图片的路径传给Matlab服务器，获取类别
 		try {
 			matlabClient.shopSignClassification(imagePath);
