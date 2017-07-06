@@ -29,6 +29,7 @@ public class UploadImage extends HttpServlet {
 	private MatlabClient matlabClient = new MatlabClient("localhost", 6677);
 	private String[] imagePath = {"5", "2", "4"};
 	private Point[] shopPos;
+	private String[] classlist;
 	private double angle1;  // 弧度角
 	private double angle2;  // 弧度角
 	
@@ -41,7 +42,8 @@ public class UploadImage extends HttpServlet {
 		//把3张图片的路径传给Matlab服务器，获取类别
 		try {
 			matlabClient.shopSignClassification(imagePath);
-			shopPos = matlabClient.getShopPosition();
+			shopPos = matlabClient.getShopPosition();  // 获取店铺位置
+			classlist = matlabClient.getClasslist();  // 获取匹配类别
 			
 			for (int i = 0; i < shopPos.length; i++) {
 				System.out.println("ShopPos" + i + " : (" + shopPos[i].x + ", " + shopPos[i].y + ")");
@@ -64,13 +66,12 @@ public class UploadImage extends HttpServlet {
 			TrianglePosition tp = new TrianglePosition(shopPos[0], shopPos[1], shopPos[2], angle1, angle2);
 			/**格式："x|y" */
 			res = tp.getUserPositionStr();
+			/**格式："x#y#label1#label2#label3" */
+			res = tp.getUserPositionStr() 
+					+ "#" + classlist[0]
+					+ "#" + classlist[1]
+					+ "#" + classlist[2];
 			System.out.println("User Position: " + res);
-			/**测试：返回一定范围的随机位置(20,20)~(1300,2900)*/
-			Random random = new Random();
-			int x = random.nextInt(1300)%1281+20;
-			int y = random.nextInt(2900)%2881+20;
-			res = x+"|"+y;
-			System.out.println("User Position FOR TEST: " + res);
 		}
 		
 		response.getWriter().append(res);
