@@ -58,6 +58,8 @@ public class MatlabClient {
 		if (!classTag.equals("-1")) {    //返回真正的类别
 			for (int i = 0; i < classlist.length; i++) {
 				if (classlist[i] == "") {
+					int intTag = Integer.parseInt(classTag);
+					classTag = (intTag - 1)+"";
 					classlist[i] = classTag;
 					if (i + 1 < imagePaths.length)
 						interactWithMatlabServer(imagePaths[i + 1]);
