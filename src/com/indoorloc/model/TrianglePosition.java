@@ -54,7 +54,7 @@ public class TrianglePosition {
 	
 	public String getUserPositionStr() {
 		Point userPosition = getUserPosition();
-		String res = userPosition.x + "|" + userPosition.y;
+		String res = userPosition.x + "#" + userPosition.y;
 		return res;
 	}
 }
