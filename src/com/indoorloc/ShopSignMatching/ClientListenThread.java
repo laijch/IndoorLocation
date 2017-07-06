@@ -30,8 +30,9 @@ public class ClientListenThread extends Thread {
 		}
 		
 		try {
-			MatlabClient.setClassTag(serverMsg);
-		} catch (Exception e) {
+			MatlabClient.getMatlabServerMsgFromThread(serverMsg);
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 //		System.out.println("ClientListenThread ended.");

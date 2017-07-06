@@ -10,8 +10,6 @@ import java.util.Map;
 
 import com.indoorloc.model.Point;
 
-import javafx.util.Pair;
-
 /**
  * 训练标签与地理位置映射表
  * @author Mo Haoran

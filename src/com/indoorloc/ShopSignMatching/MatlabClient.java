@@ -14,6 +14,8 @@ public class MatlabClient {
 	static String[] imagePaths;
 	static String[] classlist = {"", "", ""};
 	
+	static Socket clientSocket;
+	
 	private ClassToPosMap classToPosMap;
 	
 	public MatlabClient(String _hostIP, int _port) {
@@ -24,48 +26,48 @@ public class MatlabClient {
 
 	/**
 	 * 店铺分类入口
-	 * @param _imagePaths  图片路径
+	 * @param _imagePaths  图片路径集
 	 */
 	public void shopSignClassification(String[] _imagePaths) throws Exception {
 		imagePaths = _imagePaths;
-		interactWithMatlabServer(imagePaths[0]);
+		String allImagePaths = "";    //三张图片的url合成一个字符串
+		for (int i = 0; i < imagePaths.length; i++) {
+			allImagePaths += imagePaths[i];
+			if (i != imagePaths.length - 1)
+				allImagePaths += "|";
+		}
+
+		System.out.println("hostIP | port: " + hostIP + " | " + port);
+		clientSocket = new Socket(hostIP, port);    //仅创建一个socket
+		interactWithMatlabServer(allImagePaths);
 	}
 	
 	/**
 	 * 单个socket连接Matlab服务器，进行分类
-	 * @param imagePath  单张图像路径
+	 * @param AllImagePaths  图像集合路径
 	 */
-	private static void interactWithMatlabServer(String imagePath) throws Exception {
-		System.out.println("hostIP | port: " + hostIP + " | " + port);
-		
-		Socket clientSocket = new Socket(hostIP, port);
-		
-		//连接后，给服务器发送数据
+	private static void interactWithMatlabServer(String AllImagePaths) throws Exception {
+		//连接后，给Matlab服务器发送数据
 		PrintWriter outToServer = new PrintWriter(clientSocket.getOutputStream(), true);
-		outToServer.println(imagePath);
+		outToServer.println(AllImagePaths);
 		
-		//从服务器读入线程
+		//从Matlab服务器读入线程
 		ClientListenThread clientListenThread = new ClientListenThread(clientSocket);
 		clientListenThread.start();
-		
 	}
 	
 	/**
-	 * 子线程获得分类后，传回主线程
-	 * @param serverMsg
+	 * 子线程获得Matlab服务器后，传回主线程
+	 * @param serverMsg 格式为：16:18:54 / -1
 	 */
-	public static void setClassTag(String classTag) throws Exception {
-		if (!classTag.equals("-1")) {    //返回真正的类别
-			for (int i = 0; i < classlist.length; i++) {
-				if (classlist[i] == "") {
-					int intTag = Integer.parseInt(classTag);
-					classTag = (intTag - 1)+"";
-					classlist[i] = classTag;
-					if (i + 1 < imagePaths.length)
-						interactWithMatlabServer(imagePaths[i + 1]);
-					
-					break;
-				}
+	public static void getMatlabServerMsgFromThread(String serverMsg) throws Exception {
+		if (!serverMsg.equals("-1")) {    //返回真正的类别
+			String[] classTagSet = serverMsg.split(":");
+
+			for (int i = 0; i < classTagSet.length; i++) {
+				int intTag = Integer.parseInt(classTagSet[i]);
+				String classTag = (intTag - 1) + "";
+				classlist[i] = classTag;
 			}
 		}
 		else {    //上传图片无法找到匹配类别，设置类别为-1，给客户端提示
@@ -74,7 +76,7 @@ public class MatlabClient {
 			}
 		}
 		
-//		System.out.println("Main Thread Print!");
+		clientSocket.close();
 	}
 	
 	/**
@@ -88,8 +90,10 @@ public class MatlabClient {
 		
 		Point[] shopPosSet = new Point[3];
 		for (int i = 0; i < 3; i++) {
-			if (!classlist[i].equals("-1"))
+			if (!classlist[i].equals("-1")) {
+				System.out.println("Class: " + classlist[i]);
 				shopPosSet[i] = classToPosMap.getClassToPosMap().get(classlist[i]);
+			}
 			else
 				shopPosSet[i] = new Point(-1, -1);    //无法匹配时，返回点坐标(-1, -1)
 			
