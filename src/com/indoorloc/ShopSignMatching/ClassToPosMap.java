@@ -37,7 +37,7 @@ public class ClassToPosMap {
         // labelMap(地图序号,训练标签)
         Map<String, String> labelMap = new HashMap<String, String>();
 		
-        String tmp = readTxtFile("http://localhost:8080/IndoorLocServer/map.txt");
+        String tmp = readTxtFile("http://localhost:8080/IndoorLocServer/map/map.txt");
         String[] data = tmp.split("#");
         // i=0，即第一行，是无用信息
         for (int i = 1; i < data.length; ++i) {
@@ -45,7 +45,7 @@ public class ClassToPosMap {
             labelMap.put(s[1], s[0]);
         }
 
-        tmp = readTxtFile("http://localhost:8080/IndoorLocServer/location.txt");
+        tmp = readTxtFile("http://localhost:8080/IndoorLocServer/map/location.txt");
         data = tmp.split("#");
         for (int i = 1; i < data.length; ++i) {
             String[] s = data[i].split(",");
