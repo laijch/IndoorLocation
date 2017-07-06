@@ -80,6 +80,13 @@ public class MatlabClient {
 	}
 	
 	/**
+	 * 返回classlist
+	 */
+	public String[] getClasslist() {
+		return classlist;
+	}
+	
+	/**
 	 * 通过类别以及映射表返回3个商铺的地理位置
 	 */
 	public Point[] getShopPosition() throws InterruptedException {
