@@ -72,6 +72,10 @@ public class UploadImage extends HttpServlet {
 					+ "#" + classlist[1]
 					+ "#" + classlist[2];
 			System.out.println("User Position: " + res);
+			
+			shopPos[0] = new Point(-1, -1);
+			shopPos[1] = new Point(-1, -1);
+			shopPos[2] = new Point(-1, -1);
 		}
 		
 		response.getWriter().append(res);

@@ -14,6 +14,8 @@ public class MatlabClient {
 	static String[] imagePaths;
 	static String[] classlist = {"", "", ""};
 	
+	String[] last_classlist = {"", "", ""};
+	
 	static Socket clientSocket;
 	
 	private ClassToPosMap classToPosMap;
@@ -83,7 +85,7 @@ public class MatlabClient {
 	 * 返回classlist
 	 */
 	public String[] getClasslist() {
-		return classlist;
+		return last_classlist;
 	}
 	
 	/**
@@ -104,6 +106,7 @@ public class MatlabClient {
 			else
 				shopPosSet[i] = new Point(-1, -1);    //无法匹配时，返回点坐标(-1, -1)
 			
+			last_classlist[i] = classlist[i];
 			classlist[i] = "";
 		}
 		return shopPosSet;
