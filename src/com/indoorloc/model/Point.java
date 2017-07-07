@@ -12,4 +12,8 @@ public class Point {
 	public boolean equal(Point p) {
 		return (x == p.x && y == p.y);
 	}
+	
+	public boolean isCloseEnough(Point p, double distance) {
+		return ((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y)) < distance;
+	}
 }
